@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "228042735825",
+    "project_id": "vpn-project-5d77c",
+    "storage_bucket": "vpn-project-5d77c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:228042735825:android:9c18203ed56fe15a3fc5f0",
+        "android_client_info": {
+          "package_name": "com.countries.vpn.fastsecurevpnproxy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "228042735825-dp97ds67os8d6i5k0naqaloc746u3rhc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.countries.vpn.fastsecurevpnproxy",
+            "certificate_hash": "3c754d071d36436883aca1cfa62e7c5a5a999682"
+          }
+        },
+        {
+          "client_id": "228042735825-n24ev7r9qljulmb6nt6b821hr59kujfu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbOEUyVdKWOLc7ByWhgsEc9qJELWLIF2s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "228042735825-n24ev7r9qljulmb6nt6b821hr59kujfu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

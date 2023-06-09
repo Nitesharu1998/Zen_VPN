@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Fast &amp; Secure VPN Proxy</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="opendrawer">open</string>
+    <string name="closedrawer">close</string>
+</resources>
