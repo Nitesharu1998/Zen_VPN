@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ic_browser_bg"
+        android:orientation="vertical"
+        tools:context=".WebViewMainActivity">
+
+        <!--appbar-->
+        <LinearLayout
+            android:id="@+id/ll_appbar"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@drawable/ic_navbg"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/_12sdp">
+
+            <ImageView
+                android:id="@+id/iv_home"
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:src="@drawable/ic_home" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="8"
+                android:backgroundTint="@color/appbg"
+                app:cardCornerRadius="@dimen/_20sdp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="@dimen/_4sdp">
+
+                    <ImageView
+                        android:id="@+id/iv_urlImage"
+                        android:layout_width="@dimen/_30sdp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="@dimen/_8sdp"
+                        android:paddingTop="@dimen/_2sdp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_google" />
+
+                    <EditText
+                        android:id="@+id/edt_website"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:background="@null"
+                        android:gravity="center_vertical"
+                        android:hint="Enter Website"
+                        android:imeOptions="actionSend"
+                        android:inputType="textUri"
+                        android:singleLine="true"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/white" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <ImageView
+                android:id="@+id/iv_addBookmark"
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_save_bookmark" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_BookmarkBar"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@drawable/ic_navbg"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Bookmarks"
+                android:textSize="@dimen/_16sdp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/iv_addNewBookmark"
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:src="@drawable/ic_save_bookmark" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_TabMainBar"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@drawable/ic_top_bg"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_selector"
+                android:layout_width="240dp"
+                android:layout_height="70dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:animateLayoutChanges="true"
+                android:background="@color/transperant"
+                android:paddingVertical="@dimen/_12sdp"
+                android:textSize="@dimen/_16sdp"
+                app:tabIndicator="@color/white"
+                app:tabIndicatorAnimationDuration="@integer/material_motion_duration_long_1"
+                app:tabIndicatorAnimationMode="elastic"
+                app:tabIndicatorColor="@color/white"
+                app:tabIndicatorFullWidth="false"
+                app:tabIndicatorGravity="bottom"
+                app:tabIndicatorHeight="@dimen/_2sdp"
+                app:tabMode="fixed"
+                app:tabPaddingBottom="@dimen/_4sdp"
+                app:tabSelectedTextColor="@color/white"
+                app:tabTextColor="@color/light_gray" />
+
+
+        </RelativeLayout>
+
+
+        <!--appbar-->
+
+        <WebView
+            android:id="@+id/wv_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/ll_bottomControls"
+            android:layout_below="@+id/ll_appbar"
+            android:backgroundTint="@color/appbg"
+            android:padding="@dimen/_4sdp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcl_listBookmarks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/ll_bottomControls"
+            android:layout_below="@+id/rl_BookmarkBar"
+            android:visibility="gone" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcl_listTabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/ll_bottomControls"
+            android:layout_below="@+id/rl_TabMainBar"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/ll_addNewPrivateTab"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:layout_marginHorizontal="@dimen/_12sdp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="@dimen/_60sdp"
+                android:layout_height="@dimen/_60sdp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_private_tab"
+                app:tint="@color/light_gray"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:text="Your Secrets are safe with us!"
+                android:textSize="@dimen/_12sdp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:text="Fast &amp; Secure VPN Proxy won’t save the browsing history of your private tabs. "
+                android:textSize="@dimen/_11sdp" />
+
+            <ImageView
+                android:id="@+id/iv_addTab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:src="@drawable/ic_add_private_tab" />
+
+            <TextView
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Tap on + button to open a\nnew private tab"
+                android:textSize="@dimen/_11sdp" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/ll_bottomControls"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/bottom_nav_bg"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_4sdp"
+            android:weightSum="4">
+
+            <ImageView
+                android:id="@+id/iv_backPress"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:layout_weight="0.9"
+                android:paddingHorizontal="@dimen/_4sdp"
+                android:paddingVertical="@dimen/_6sdp"
+                android:src="@drawable/ic_webview_back" />
+
+            <ImageView
+                android:id="@+id/iv_nextPress"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:layout_weight="0.9"
+                android:paddingVertical="@dimen/_6sdp"
+                android:rotation="180"
+                android:src="@drawable/ic_webview_back" />
+
+            <ImageView
+                android:id="@+id/iv_switchTabs"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:layout_weight="0.9"
+                android:paddingVertical="@dimen/_6sdp"
+                android:rotation="180"
+                android:src="@drawable/ic_switch_tabs" />
+
+            <ImageView
+                android:id="@+id/iv_showBookmarks"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:layout_weight="0.9"
+                android:paddingVertical="@dimen/_6sdp"
+                android:src="@drawable/ic_bookmark_show" />
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</layout>

@@ -1,12 +1,18 @@
 package com.countries.vpn.AdsUtils.PreferencesManager;
 
+import static com.countries.vpn.AdsUtils.Utils.Global.isArrayListNull;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.countries.vpn.AdsUtils.FirebaseADHandlers.AdsJsonPOJO;
 import com.countries.vpn.AdsUtils.Utils.Constants;
+import com.countries.vpn.CommonDataModels.WebLinksDataModel;
 import com.countries.vpn.fastsecurevpnproxy.R;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.ArrayList;
 
 public class AppPreferences {
 
@@ -22,6 +28,19 @@ public class AppPreferences {
         sharedPreferences = applicationContext.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
     }
 
+    public ArrayList<String> getStoredNormalTabs() {
+        ArrayList<String> normalTabsList = new Gson().fromJson(getString(Constants.NORMAL_TABS, ""), new TypeToken<ArrayList<String>>() {
+        }.getType());
+        if (isArrayListNull(normalTabsList)) {
+            return new ArrayList<String>();
+        } else {
+            return normalTabsList;
+        }
+    }
+
+    public void setStoredNormalTabs(ArrayList<String> normalTabsList) {
+        putString(Constants.NORMAL_TABS, new Gson().toJson(normalTabsList));
+    }
 
     public void setAdsModel(AdsJsonPOJO adsJsonPOJO) {
         putString(Constants.ADSJSON, new Gson().toJson(adsJsonPOJO));
@@ -33,6 +52,19 @@ public class AppPreferences {
 
     public boolean getIsFirstRun() {
         return getBoolean(Constants.IS_FIRST_RUN, true);
+    }
+
+
+    public String getWebLinkModel() {
+        return getString(Constants.WEBLINKMODEL, "");
+    }
+
+    public void setWebLinkModel(ArrayList<WebLinksDataModel> dataModels) {
+        putString(Constants.WEBLINKMODEL, new Gson().toJson(dataModels));
+    }
+
+    public void setFlagsModel(String model) {
+        putString(Constants.FlagsModel, model);
     }
 
     public void setIsFirstRun(boolean isFirstRun) {
@@ -101,5 +133,6 @@ public class AppPreferences {
         editor.clear();
         editor.apply();
     }
+
 
 }

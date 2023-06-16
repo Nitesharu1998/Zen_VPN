@@ -2,7 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer"
         android:layout_width="match_parent"
@@ -29,6 +28,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_margin="@dimen/_10sdp"
+                    android:rotation="-5"
                     android:src="@drawable/ic_close" />
 
                 <ImageView
@@ -178,7 +178,7 @@
                 <ImageView
                     android:id="@+id/img_top"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_200sdp"
+                    android:layout_height="@dimen/_193sdp"
                     android:scaleType="fitXY"
                     android:src="@drawable/main_top_bg"
                     tools:layout_editor_absoluteX="0dp"
@@ -188,7 +188,7 @@
                     android:id="@+id/spiral_bg"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_200sdp"
-                    android:layout_marginTop="@dimen/_110sdp"
+                    android:layout_marginTop="@dimen/_90sdp"
                     android:scaleType="centerInside"
                     android:src="@drawable/spiral_bg"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -226,7 +226,7 @@
                     app:layout_constraintTop_toTopOf="@+id/btn_power" />
 
                 <TextView
-                    android:id="@+id/connect"
+                    android:id="@+id/tv_connect"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_24sdp"
@@ -239,6 +239,142 @@
 
 
             </androidx.constraintlayout.motion.widget.MotionLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:orientation="vertical">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cv_cardSuggestedServer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_20sdp"
+                    android:backgroundTint="@color/lightblack"
+                    android:outlineAmbientShadowColor="@color/lightblack"
+                    android:outlineSpotShadowColor="@color/lightblack"
+                    app:cardCornerRadius="@dimen/_10sdp"
+                    app:cardUseCompatPadding="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="@dimen/_9sdp">
+                        <!--vpn Image-->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.3"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/img_vpnFlag"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+
+                        </LinearLayout>
+                        <!--vpn details-->
+                        <RelativeLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_4sdp"
+                            android:layout_weight="0.7"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_countryName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="ServerName"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/_12sdp" />
+
+                            <TextView
+                                android:id="@+id/tv_fastestServer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/tv_countryName"
+                                android:text="@string/fastest_server"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/_10sdp" />
+
+                            <TextView
+                                android:id="@+id/tv_selectServer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="@dimen/_12sdp"
+                                android:background="@drawable/ic_select_server"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/_10sdp" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <RadioButton
+                    android:id="@+id/rb_autoSelect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/radiobg"
+                    android:buttonTint="@color/endcolor"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:layoutDirection="rtl"
+                    android:paddingHorizontal="@dimen/_8sdp"
+                    android:text="Auto Select"
+                    android:textColor="@color/white"
+                    android:visibility="gone" />
+
+
+                <LinearLayout
+                    android:id="@+id/ll_ipLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_12sdp"
+                    android:background="@drawable/radiobg"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="@dimen/_12sdp"
+                    android:paddingVertical="@dimen/_6sdp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="IP Address   "
+                        android:textColor="@color/endcolor"
+                        android:textSize="@dimen/_12sdp" />
+
+                    <TextView
+                        android:id="@+id/tv_ipaddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="192.168.10.2"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_12sdp" />
+                </LinearLayout>
+
+                <!-- TODO switch for premium app ad-->
+
+            </LinearLayout>
+
+
+            <ImageView
+                android:id="@+id/iv_promotionSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_100sdp"
+                android:layout_gravity="bottom"
+                android:layout_marginHorizontal="@dimen/_18sdp"
+                android:layout_marginTop="@dimen/_30sdp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_gopremium1" />
 
         </LinearLayout>
 

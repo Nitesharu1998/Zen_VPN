@@ -70,8 +70,17 @@ dependencies {
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.6.1"
     implementation 'androidx.lifecycle:lifecycle-process:2.6.1'
 
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+
     //lottie
     def lottieVersion = "3.4.0"
     implementation "com.airbnb.android:lottie:$lottieVersion"
+
+    //speedtest
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation files('libs/achartengine-1.2.0')
+    implementation 'com.jignesh13.speedometer:speedometer:1.0.0'
+
 
 }

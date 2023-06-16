@@ -10,7 +10,13 @@ import androidx.databinding.DataBindingUtil;
 
 import com.countries.vpn.AdsUtils.FirebaseADHandlers.AdUtils;
 import com.countries.vpn.AdsUtils.Interfaces.AppInterfaces;
+import com.countries.vpn.AdsUtils.Utils.Constants;
+import com.countries.vpn.AdsUtils.Utils.Global;
+import com.countries.vpn.Vpn.APIHandler.VPNApiCallHandler;
+import com.countries.vpn.Vpn.TunnelModel;
 import com.countries.vpn.fastsecurevpnproxy.databinding.ActivityIntroBinding;
+
+import java.util.ArrayList;
 
 public class IntroActivity extends AppCompatActivity {
     ActivityIntroBinding binding;
@@ -24,6 +30,9 @@ public class IntroActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         activity = this;
         binding = DataBindingUtil.setContentView(activity, R.layout.activity_intro);
+
+
+
         handleNext(position);
 
         binding.ivNext.setOnClickListener(new View.OnClickListener() {

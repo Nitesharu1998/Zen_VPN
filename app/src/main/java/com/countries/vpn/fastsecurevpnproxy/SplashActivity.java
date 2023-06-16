@@ -16,26 +16,31 @@ import com.countries.vpn.AdsUtils.FirebaseADHandlers.AdsJsonPOJO;
 import com.countries.vpn.AdsUtils.FirebaseADHandlers.FirebaseUtils;
 import com.countries.vpn.AdsUtils.Interfaces.AppInterfaces;
 import com.countries.vpn.AdsUtils.PreferencesManager.AppPreferences;
+import com.countries.vpn.AdsUtils.Utils.AppAsyncTasks;
 import com.countries.vpn.AdsUtils.Utils.Constants;
 import com.countries.vpn.AdsUtils.Utils.Global;
+import com.countries.vpn.Vpn.APIHandler.VPNApiCallHandler;
+import com.countries.vpn.Vpn.TunnelModel;
 import com.countries.vpn.fastsecurevpnproxy.databinding.ActivitySplashBinding;
 import com.wireguard.android.backend.Backend;
+
+import java.util.ArrayList;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
     AppPreferences appPreferencesManger;
     Activity activity;
     ActivitySplashBinding binding;
-    public static Backend backend;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = SplashActivity.this;
         binding = DataBindingUtil.setContentView(activity, R.layout.activity_splash);
-
         appPreferencesManger = new AppPreferences(this);
-
+        AppAsyncTasks.GetFlags getFlags = new AppAsyncTasks.GetFlags(activity);
+        getFlags.execute();
         if (Constants.adsJsonPOJO != null && !isNull(Constants.adsJsonPOJO.getParameters().getApp_open_ad().getDefaultValue().getValue())) {
             Constants.adsJsonPOJO = Global.getAdsData(appPreferencesManger.getAdsModel());
             Constants.adsJsonPOJO.getParameters().getShowAd().getDefaultValue().setValue("false");
@@ -63,6 +68,7 @@ public class SplashActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+
                         if (appPreferencesManger.getIsFirstRun()) {
                             startActivity(new Intent(SplashActivity.this, IntroActivity.class));
                             finish();
@@ -74,6 +80,5 @@ public class SplashActivity extends AppCompatActivity {
                 }, 1000);
             }
         });
-
     }
 }

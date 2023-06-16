@@ -9,6 +9,9 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import com.countries.vpn.AdsUtils.Utils.Constants;
+import com.countries.vpn.Vpn.VPNInitiatorHandler;
+import com.countries.vpn.Vpn.VpnInterfaces;
 import com.countries.vpn.fastsecurevpnproxy.SplashActivity;
 
 public class AppOpenAds implements LifecycleObserver, Application.ActivityLifecycleCallbacks {
@@ -49,12 +52,22 @@ public class AppOpenAds implements LifecycleObserver, Application.ActivityLifecy
 
     }
 
+
     @Override
     public void onActivityResumed(Activity activity) {
         currentActivity = activity;
         AdUtils.loadInitialInterstitialAds(activity);
         AdUtils.loadAppOpenAds(activity);
         AdUtils.loadInitialNativeList(activity);
+        if (Constants.randomTunnelModel.getCountry() != null && !Constants.isConnected) {
+            VPNInitiatorHandler.connectVPN(activity, Constants.randomTunnelModel, new VpnInterfaces.vpnConnectionInterface() {
+                @Override
+                public void isConnected(boolean state, String ipAddress) {
+                    Constants.isConnected = true;
+                }
+            });
+        }
+
     }
 
     @Override
@@ -63,6 +76,8 @@ public class AppOpenAds implements LifecycleObserver, Application.ActivityLifecy
 
     @Override
     public void onActivityPaused(Activity activity) {
+        Constants.isConnected = false;
+        VPNInitiatorHandler.disconnectVPN();
     }
 
     @Override

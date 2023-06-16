@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_180sdp"
+        android:layout_margin="@dimen/_12sdp"
+        android:orientation="vertical"
+        app:cardCornerRadius="@dimen/_10sdp"
+        android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"
+        app:strokeColor="@color/white"
+        app:strokeWidth="@dimen/_2sdp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <RelativeLayout
+                android:id="@+id/rl_webview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/iv_closeTab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    app:tint="@color/startcolor"
+                    android:rotation="177"
+                    android:elevation="@dimen/_2sdp"
+                    android:src="@drawable/ic_close" />
+
+                <WebView
+                    android:id="@+id/wv_loadLink"
+                    android:layout_width="match_parent"
+
+                    android:layout_height="match_parent" />
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/iv_addNewTab"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_add_new_tab"/>
+
+        </LinearLayout>
+
+
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

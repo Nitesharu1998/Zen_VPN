@@ -49,52 +49,6 @@ public class AdUtils {
 
     private static ConnectionDetector cd;
 
-
-    public static void showRewardAd(Activity activity) {
-        AppPreferences appPreferencesManger = new AppPreferences(activity);
-        Constants.adsJsonPOJO = new Gson().fromJson(appPreferencesManger.getAdsModel(), AdsJsonPOJO.class);
-        cd = new ConnectionDetector(activity);
-
-        if (cd.isConnectingToInternet()) {
-            AdRequest adRequest = new AdRequest.Builder().build();
-            RewardedAd.load(activity, Constants.adsJsonPOJO.getParameters().getRewarded_ad().getValueType(), adRequest, new RewardedAdLoadCallback() {
-                @Override
-                public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                    Global.sout("RewardedAdLoadCallback: ", loadAdError.toString());
-                }
-
-                @Override
-                public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
-                    rewardedAd.show(activity, new OnUserEarnedRewardListener() {
-
-                        @Override
-                        public void onUserEarnedReward(RewardItem rewardItem) {
-                            //TODO user earned reward --Not to implement now--
-                        }
-                    });
-                    rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-
-                        @Override
-                        public void onAdShowedFullScreenContent() {
-                        }
-
-                        @Override
-                        public void onAdFailedToShowFullScreenContent(AdError adError) {
-                            Global.sout("onAdFailedToShowFullScreenContent: ", adError.toString());
-                        }
-
-                        @Override
-                        public void onAdDismissedFullScreenContent() {
-                            Global.sout("onAdFailedToShowFullScreenContent: ", "onAdDismissedFullScreenContent");
-                        }
-                    });
-                }
-
-            });
-        }
-    }
-
-
     public static void loadInitialNativeList(Activity activity) {
         int i = 0;
         while (i < 10) {
@@ -126,107 +80,35 @@ public class AdUtils {
 
     }
 
+    private static void loadInterstitialAd(Activity activity, AppInterfaces.InterstitialADInterface interstitialADInterface) {
+        if (Constants.adsJsonPOJO.getParameters().getShowAd().getDefaultValue().getValue().equals("true")) {
+            if (!Global.isArrayListNull(Constants.InterstitialList) && Constants.InterstitialList.size() > 0) {
 
-    public static void showNativeAd(Activity activity, LinearLayout adContainer, boolean isFullScreenAd) {
-        AppPreferences appPreferencesManger = new AppPreferences(activity);
-        Constants.adsJsonPOJO = new Gson().fromJson(appPreferencesManger.getAdsModel(), AdsJsonPOJO.class);
-        cd = new ConnectionDetector(activity);
-        if (cd.isConnectingToInternet() && Constants.adsJsonPOJO.getParameters().getShowAd().getDefaultValue().getValue().equals("true") && Constants.NativeAdsList.size() > 0) {
-            NativeAd nativeAd = Constants.NativeAdsList.get(0);
-            NativeAdView unifiedNativeAdView;
-            try {
-                if (isFullScreenAd) {
-                    unifiedNativeAdView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.full_native_ad_param, null);
-                } else {
-                    unifiedNativeAdView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.small_native_ad, null);
-                }
-                unifiedNativeAdView.isHardwareAccelerated();
-                populateUnifiedNativeAdView(nativeAd, unifiedNativeAdView, isFullScreenAd);
-                Global.sout("ADs status", "native success");
-                adContainer.removeAllViews();
-                adContainer.addView(unifiedNativeAdView);
-                adContainer.setVisibility(View.VISIBLE);
-            } catch (Exception e) {
-                System.out.println("Native AD exception" + e.getMessage());
-            }
-        } else {
-            adContainer.setVisibility(View.GONE);
-        }
+                Constants.InterstitialList.get(0).setFullScreenContentCallback(new FullScreenContentCallback() {
 
+                    @Override
+                    public void onAdDismissedFullScreenContent() {
+                        interstitialADInterface.adLoadState(true);
+                        Constants.InterstitialList.remove(0);
+                        loadInitialInterstitialAds(activity);
 
-    }
-
-    public static void showBannerAd(LinearLayout adContainer, Activity activity) {
-        cd = new ConnectionDetector(activity);
-        AppPreferences appPreferencesManger = new AppPreferences(activity);
-        Constants.adsJsonPOJO = new Gson().fromJson(appPreferencesManger.getAdsModel(), AdsJsonPOJO.class);
-
-        if (!isNull(Constants.adsJsonPOJO.getParameters().getBanner_id().getDefaultValue().getValue())) {
-            if (cd.isConnectingToInternet() && Constants.adsJsonPOJO.getParameters().getShowAd().getDefaultValue().getValue().equals("true")) {
-                AdView mAdView = new AdView(activity);
-                if (cd.isConnectingToInternet()) {
-                    AdRequest adRequest = new AdRequest.Builder().build();
-                    try {
-                        mAdView.setVisibility(View.VISIBLE);
-                        mAdView.setEnabled(true);
-                        mAdView.setAdSize(AdSize.BANNER);
-                        mAdView.setAdUnitId(Constants.adsJsonPOJO.getParameters().getBanner_id().getDefaultValue().getValue());
-                        adContainer.setVisibility(View.VISIBLE);
-
-                        mAdView.setAdListener(new AdListener() {
-                            public void onAdFailedToLoad(int i) {
-                                adContainer.setVisibility(View.GONE);
-                            }
-
-                            @Override
-                            public void onAdClicked() {
-                                super.onAdClicked();
-                                //                        sAppOpenadsFLAG = false;
-                            }
-
-                            public void onAdLoaded() {
-                            }
-
-                            public void onAdOpened() {
-                            }
-
-                            public void onAdLeftApplication() {
-                            }
-
-                            public void onAdClosed() {
-                            }
-                        });
-
-                        mAdView.loadAd(adRequest);
-                        adContainer.removeAllViews();
-                        adContainer.setPadding(5, 5, 5, 5);
-                        adContainer.addView(mAdView);
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
-                    return;
-                }
-                mAdView.setVisibility(View.GONE);
-                adContainer.setVisibility(View.GONE);
-                adContainer.removeAllViews();
-            }
-        } else {
-            adContainer.setVisibility(View.GONE);
-            adContainer.removeAllViews();
-        }
-    }
 
-    public static void showInterstitialAd(Activity activity, AppInterfaces.InterstitialADInterface interstitialADInterface) {
-        AppPreferences appPreferencesManger = new AppPreferences(activity);
-        Constants.adsJsonPOJO = new Gson().fromJson(appPreferencesManger.getAdsModel(), AdsJsonPOJO.class);
-        cd = new ConnectionDetector(activity);
-        if (cd.isConnectingToInternet() && Constants.adsJsonPOJO.getParameters().getShowAd().getDefaultValue().getValue().equals("true")) {
-            if (Constants.hitCounter == Integer.parseInt(Constants.adsJsonPOJO.getParameters().getApp_open_ad().getDefaultValue().getHits())) {
-                Constants.hitCounter = 0;
-                loadInterstitialAd(activity, interstitialADInterface);
+                    @Override
+                    public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                        interstitialADInterface.adLoadState(false);
+                        Constants.InterstitialList.remove(0);
+                        loadInitialInterstitialAds(activity);
+                    }
+
+                    @Override
+                    public void onAdShowedFullScreenContent() {
+                    }
+                });
+                Constants.InterstitialList.get(0).show(activity);
             } else {
-                Constants.hitCounter++;
                 interstitialADInterface.adLoadState(false);
+                loadInitialInterstitialAds(activity);
             }
         } else {
             interstitialADInterface.adLoadState(false);
@@ -263,6 +145,85 @@ public class AdUtils {
         } catch (Exception e) {
             Global.sout("AppOpenAds list exception", e.getLocalizedMessage());
         }
+    }
+
+    public static void loadInitialInterstitialAds(Context context) {
+        try {
+            AppPreferences manager = new AppPreferences(context);
+            Constants.adsJsonPOJO = Global.getAdsData(manager.getAdsModel());
+
+            int i = 0;
+            while (i < 3) {
+                Global.sout("Interstitial ads list size before >>>>", Constants.InterstitialList.size());
+                if (Constants.InterstitialList.size() <= 4 && Constants.adsJsonPOJO != null) {
+                    AdRequest adRequest = new AdRequest.Builder().build();
+                    InterstitialAd.load(context, Constants.adsJsonPOJO.getParameters().getFull_id().getDefaultValue().getValue(), adRequest, new InterstitialAdLoadCallback() {
+                        @Override
+                        public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                            Constants.InterstitialList.add(interstitialAd);
+                            Global.sout("Interstitial ads list size after >>>>", Constants.InterstitialList.size());
+                        }
+
+                        @Override
+                        public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        }
+                    });
+                } else {
+                    break;
+                }
+                i++;
+            }
+        } catch (Exception e) {
+            Global.sout("interstitial list exception", e.getLocalizedMessage());
+        }
+
+    }
+
+
+    public static void showInterstitialAd(Activity activity, AppInterfaces.InterstitialADInterface interstitialADInterface) {
+        AppPreferences appPreferencesManger = new AppPreferences(activity);
+        Constants.adsJsonPOJO = new Gson().fromJson(appPreferencesManger.getAdsModel(), AdsJsonPOJO.class);
+        cd = new ConnectionDetector(activity);
+        if (cd.isConnectingToInternet() && Constants.adsJsonPOJO.getParameters().getShowAd().getDefaultValue().getValue().equals("true")) {
+            if (Constants.hitCounter == Integer.parseInt(Constants.adsJsonPOJO.getParameters().getApp_open_ad().getDefaultValue().getHits())) {
+                loadInterstitialAd(activity, interstitialADInterface);
+                Constants.hitCounter = 0;
+            } else {
+                Constants.hitCounter++;
+                interstitialADInterface.adLoadState(false);
+            }
+        } else {
+            interstitialADInterface.adLoadState(false);
+        }
+    }
+
+    public static void showNativeAd(Activity activity, LinearLayout adContainer, boolean isFullScreenAd) {
+        AppPreferences appPreferencesManger = new AppPreferences(activity);
+        Constants.adsJsonPOJO = new Gson().fromJson(appPreferencesManger.getAdsModel(), AdsJsonPOJO.class);
+        cd = new ConnectionDetector(activity);
+        if (cd.isConnectingToInternet() && Constants.adsJsonPOJO.getParameters().getShowAd().getDefaultValue().getValue().equals("true") && Constants.NativeAdsList.size() > 0) {
+            NativeAd nativeAd = Constants.NativeAdsList.get(0);
+            NativeAdView unifiedNativeAdView;
+            try {
+                if (isFullScreenAd) {
+                    unifiedNativeAdView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.full_native_ad_param, null);
+                } else {
+                    unifiedNativeAdView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.small_native_ad, null);
+                }
+                unifiedNativeAdView.isHardwareAccelerated();
+                populateUnifiedNativeAdView(nativeAd, unifiedNativeAdView, isFullScreenAd);
+                Global.sout("ADs status", "native success");
+                adContainer.removeAllViews();
+                adContainer.addView(unifiedNativeAdView);
+                adContainer.setVisibility(View.VISIBLE);
+            } catch (Exception e) {
+                System.out.println("Native AD exception" + e.getMessage());
+            }
+        } else {
+            adContainer.setVisibility(View.GONE);
+        }
+
+
     }
 
     public static void showAdIfAvailable(Activity activity, AppInterfaces.AppOpenADInterface appOpenADInterface) {
@@ -313,41 +274,6 @@ public class AdUtils {
             });
         } else {
             appOpenADInterface.appOpenAdState(false);
-        }
-    }
-
-    private static void loadInterstitialAd(Activity activity, AppInterfaces.InterstitialADInterface interstitialADInterface) {
-        if (Constants.adsJsonPOJO.getParameters().getShowAd().getDefaultValue().getValue().equals("true")) {
-            if (!Global.isArrayListNull(Constants.InterstitialList) && Constants.InterstitialList.size() > 0) {
-
-                Constants.InterstitialList.get(0).setFullScreenContentCallback(new FullScreenContentCallback() {
-
-                    @Override
-                    public void onAdDismissedFullScreenContent() {
-                        interstitialADInterface.adLoadState(true);
-                        Constants.InterstitialList.remove(0);
-                        loadInitialInterstitialAds(activity);
-
-                    }
-
-                    @Override
-                    public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
-                        interstitialADInterface.adLoadState(false);
-                        Constants.InterstitialList.remove(0);
-                        loadInitialInterstitialAds(activity);
-                    }
-
-                    @Override
-                    public void onAdShowedFullScreenContent() {
-                    }
-                });
-                Constants.InterstitialList.get(0).show(activity);
-            } else {
-                interstitialADInterface.adLoadState(false);
-                loadInitialInterstitialAds(activity);
-            }
-        } else {
-            interstitialADInterface.adLoadState(false);
         }
     }
 
@@ -410,36 +336,108 @@ public class AdUtils {
         Constants.NativeAdsList.remove(0);
     }
 
-    public static void loadInitialInterstitialAds(Context context) {
-        try {
-            AppPreferences manager = new AppPreferences(context);
-            Constants.adsJsonPOJO = Global.getAdsData(manager.getAdsModel());
+    public static void showRewardAd(Activity activity) {
+        AppPreferences appPreferencesManger = new AppPreferences(activity);
+        Constants.adsJsonPOJO = new Gson().fromJson(appPreferencesManger.getAdsModel(), AdsJsonPOJO.class);
+        cd = new ConnectionDetector(activity);
 
-            int i = 0;
-            while (i < 3) {
-                Global.sout("Interstitial ads list size before >>>>", Constants.InterstitialList.size());
-                if (Constants.InterstitialList.size() <= 4 && Constants.adsJsonPOJO != null) {
-                    AdRequest adRequest = new AdRequest.Builder().build();
-                    InterstitialAd.load(context, Constants.adsJsonPOJO.getParameters().getFull_id().getDefaultValue().getValue(), adRequest, new InterstitialAdLoadCallback() {
-                        @Override
-                        public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                            Constants.InterstitialList.add(interstitialAd);
-                            Global.sout("Interstitial ads list size after >>>>", Constants.InterstitialList.size());
-                        }
+        if (cd.isConnectingToInternet()) {
+            AdRequest adRequest = new AdRequest.Builder().build();
+            RewardedAd.load(activity, Constants.adsJsonPOJO.getParameters().getRewarded_ad().getValueType(), adRequest, new RewardedAdLoadCallback() {
+                @Override
+                public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                    Global.sout("RewardedAdLoadCallback: ", loadAdError.toString());
+                }
+
+                @Override
+                public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
+                    rewardedAd.show(activity, new OnUserEarnedRewardListener() {
 
                         @Override
-                        public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        public void onUserEarnedReward(RewardItem rewardItem) {
+                            //TODO user earned reward --Not to implement now--
                         }
                     });
-                } else {
-                    break;
-                }
-                i++;
-            }
-        } catch (Exception e) {
-            Global.sout("interstitial list exception", e.getLocalizedMessage());
-        }
+                    rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 
+                        @Override
+                        public void onAdShowedFullScreenContent() {
+                        }
+
+                        @Override
+                        public void onAdFailedToShowFullScreenContent(AdError adError) {
+                            Global.sout("onAdFailedToShowFullScreenContent: ", adError.toString());
+                        }
+
+                        @Override
+                        public void onAdDismissedFullScreenContent() {
+                            Global.sout("onAdFailedToShowFullScreenContent: ", "onAdDismissedFullScreenContent");
+                        }
+                    });
+                }
+
+            });
+        }
+    }
+
+    public static void showBannerAd(LinearLayout adContainer, Activity activity) {
+        cd = new ConnectionDetector(activity);
+        AppPreferences appPreferencesManger = new AppPreferences(activity);
+        Constants.adsJsonPOJO = new Gson().fromJson(appPreferencesManger.getAdsModel(), AdsJsonPOJO.class);
+
+        if (!isNull(Constants.adsJsonPOJO.getParameters().getBanner_id().getDefaultValue().getValue())) {
+            if (cd.isConnectingToInternet() && Constants.adsJsonPOJO.getParameters().getShowAd().getDefaultValue().getValue().equals("true")) {
+                AdView mAdView = new AdView(activity);
+                if (cd.isConnectingToInternet()) {
+                    AdRequest adRequest = new AdRequest.Builder().build();
+                    try {
+                        mAdView.setVisibility(View.VISIBLE);
+                        mAdView.setEnabled(true);
+                        mAdView.setAdSize(AdSize.BANNER);
+                        mAdView.setAdUnitId(Constants.adsJsonPOJO.getParameters().getBanner_id().getDefaultValue().getValue());
+                        adContainer.setVisibility(View.VISIBLE);
+
+                        mAdView.setAdListener(new AdListener() {
+                            public void onAdFailedToLoad(int i) {
+                                adContainer.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onAdClicked() {
+                                super.onAdClicked();
+                                //                        sAppOpenadsFLAG = false;
+                            }
+
+                            public void onAdLoaded() {
+                            }
+
+                            public void onAdOpened() {
+                            }
+
+                            public void onAdLeftApplication() {
+                            }
+
+                            public void onAdClosed() {
+                            }
+                        });
+
+                        mAdView.loadAd(adRequest);
+                        adContainer.removeAllViews();
+                        adContainer.setPadding(5, 5, 5, 5);
+                        adContainer.addView(mAdView);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+                mAdView.setVisibility(View.GONE);
+                adContainer.setVisibility(View.GONE);
+                adContainer.removeAllViews();
+            }
+        } else {
+            adContainer.setVisibility(View.GONE);
+            adContainer.removeAllViews();
+        }
     }
 
     public static void loadCollapsibleAdsList(Activity activity) {
