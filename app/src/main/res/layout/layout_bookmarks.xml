@@ -7,16 +7,13 @@
 
     </data>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_250sdp"
-        android:background="@color/transperant">
-
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
-            app:cardCornerRadius="@dimen/_10sdp">
+            android:layout_margin="8dp"
+            app:cardCornerRadius="@dimen/_12sdp"
+            app:cardElevation="@dimen/_4sdp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -28,7 +25,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginVertical="@dimen/_12sdp"
+                    android:layout_marginVertical="@dimen/_6sdp"
+                    android:gravity="center"
                     android:text="Saved Bookmarks"
                     android:textStyle="bold"
                     android:textColor="@color/endcolor"
@@ -38,13 +36,13 @@
                     android:id="@+id/rcl_bookmarkList"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_below="@+id/txt_savedBookmarks"
-                    android:paddingHorizontal="@dimen/_8sdp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginBottom="@dimen/_8sdp"
                     tools:listitem="@layout/bookmarks_item" />
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
 
-    </RelativeLayout>
 </layout>

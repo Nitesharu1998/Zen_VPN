@@ -26,12 +26,15 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.countries.vpn.AdsUtils.FirebaseADHandlers.AdUtils;
+import com.countries.vpn.AdsUtils.Interfaces.AppInterfaces;
 import com.countries.vpn.AdsUtils.Utils.Constants;
 import com.countries.vpn.AdsUtils.Utils.Global;
 import com.countries.vpn.SpeedHandlers.GetSpeedTestHostsHandler;
 import com.countries.vpn.SpeedHandlers.HttpDownloadTest;
 import com.countries.vpn.SpeedHandlers.HttpUploadTest;
 import com.countries.vpn.SpeedHandlers.PingTest;
+import com.countries.vpn.fastsecurevpnproxy.MainActivity;
 import com.countries.vpn.fastsecurevpnproxy.R;
 import com.countries.vpn.fastsecurevpnproxy.databinding.FragmentSpeedTestBinding;
 
@@ -58,23 +61,23 @@ public class SpeedTestFragment extends Fragment {
     HashSet<String> tempBlackList = new HashSet<>();
     TextView tv_loc1, tv_loc2, sim, get_ip;
     LocationManager locationManager;
-
-    @Override
-    public void onResume() {
-        super.onResume();
-       /* getSpeedTestHostsHandler = new GetSpeedTestHostsHandler();
-        getSpeedTestHostsHandler.start();*/
-    }
+    PingTest pingTest;
+    HttpDownloadTest downloadTest;
+    HttpUploadTest uploadTest;
+    MainActivity activity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(LayoutInflater.from(container.getContext()), R.layout.fragment_speed_test, container, false);
         context = binding.getRoot().getContext();
-        if (Constants.randomTunnelModel.getCountry()!=null){
+        
+        activity = (MainActivity) requireActivity();
+
+        if (Constants.randomTunnelModel.getCountry() != null) {
             binding.tvCountryName.setText(Constants.randomTunnelModel.getCountry());
             Glide.with(context).load(Global.getFlagOfCountry(Constants.randomTunnelModel.getCountry())).into(binding.imgVpnFlag);
-        }else{
-            binding.cvCardSuggestedServer.setVisibility(View.GONE );
+        } else {
+            binding.cvCardSuggestedServer.setVisibility(View.GONE);
         }
         checkLocationisEnabledOrNot();
         getLocation();
@@ -82,7 +85,14 @@ public class SpeedTestFragment extends Fragment {
         binding.tvStartRestartTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startTest();
+                AdUtils.showInterstitialAd(activity, new AppInterfaces.InterstitialADInterface() {
+                    @Override
+                    public void adLoadState(boolean isLoaded) {
+//                        switchClicks(false);
+                        startTest();
+                    }
+                });
+
             }
         });
 
@@ -98,7 +108,7 @@ public class SpeedTestFragment extends Fragment {
 
             @Override
             public void run() {
-                requireActivity().runOnUiThread(() -> binding.tvStartRestartTest.setText("Selecting best server based on ping..."));
+                activity.runOnUiThread(() -> binding.tvStartRestartTest.setText("Selecting best server"));
                 int timeCount = 600;
                 while (!getSpeedTestHostsHandler.isFinished()) {
                     timeCount--;
@@ -107,7 +117,7 @@ public class SpeedTestFragment extends Fragment {
                     } catch (InterruptedException e) {
                     }
                     if (timeCount <= 0) {
-                        requireActivity().runOnUiThread(() -> {
+                        activity.runOnUiThread(() -> {
                             Toast.makeText(context, "No Connection...", Toast.LENGTH_LONG).show();
                             binding.tvStartRestartTest.setEnabled(true);
                             binding.tvStartRestartTest.setTextSize(16);
@@ -147,17 +157,17 @@ public class SpeedTestFragment extends Fragment {
                 final double distance = dist;
 
                 if (info == null) {
-                    requireActivity().runOnUiThread(() -> {
+                    activity.runOnUiThread(() -> {
                         binding.tvStartRestartTest.setTextSize(12);
                         binding.tvStartRestartTest.setText("There was a problem in getting Host Location. Try again later.");
                     });
                     return;
                 }
-                requireActivity().runOnUiThread(() -> {
+                activity.runOnUiThread(() -> {
                     binding.tvStartRestartTest.setTextSize(13);
-                    binding.tvStartRestartTest.setText(String.format("Host Location: %s [Distance: %s km]", info.get(2), new DecimalFormat("#.##").format(distance / 1000)));
+                    binding.tvStartRestartTest.setText(String.format("Host Location: %s ", info.get(2)));
                 });
-                requireActivity().runOnUiThread(() -> {
+                activity.runOnUiThread(() -> {
                     binding.tvDownloadSpeed.setText("0");
                     binding.tvUploadSpeed.setText("0");
                 });
@@ -170,10 +180,11 @@ public class SpeedTestFragment extends Fragment {
                 Boolean downloadTestFinished = false;
                 Boolean uploadTestStarted = false;
                 Boolean uploadTestFinished = false;
-                final PingTest pingTest = new PingTest(info.get(6).replace(":8080", ""), 3);
-                final HttpDownloadTest downloadTest = new HttpDownloadTest(testAddr.replace(testAddr.split("/")[testAddr.split("/").length - 1], ""));
-                final HttpUploadTest uploadTest = new HttpUploadTest(testAddr);
+                pingTest = new PingTest(info.get(6).replace(":8080", ""), 3);
+                downloadTest = new HttpDownloadTest(testAddr.replace(testAddr.split("/")[testAddr.split("/").length - 1], ""));
+                uploadTest = new HttpUploadTest(testAddr);
                 while (true) {
+
                     if (!pingTestStarted) {
                         pingTest.start();
                         pingTestStarted = true;
@@ -190,18 +201,17 @@ public class SpeedTestFragment extends Fragment {
                         if (pingTest.getAvgRtt() == 0) {
                             System.out.println("Ping error...");
                         } else {
-                            requireActivity().runOnUiThread(() -> {
-                            });
+                            activity.runOnUiThread(() -> binding.tvPingSpeed.setText("" + pingTest.getAvgRtt() + "\nms"));
                         }
                     } else {
                         pingRateList.add(pingTest.getInstantRtt());
 
-                        requireActivity().runOnUiThread(new Runnable() {
+                        activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                             }
                         });
-                        requireActivity().runOnUiThread(() -> {
+                        activity.runOnUiThread(() -> {
                             XYSeries pingSeries = new XYSeries("");
                             pingSeries.setTitle("");
 
@@ -220,22 +230,23 @@ public class SpeedTestFragment extends Fragment {
                             if (downloadTest.getFinalDownloadRate() == 0) {
                                 System.out.println("Download error...");
                             } else {
-                                requireActivity().runOnUiThread(() -> binding.tvDownloadSpeed.setText(dec.format(downloadTest.getFinalDownloadRate())));
+                                activity.runOnUiThread(() -> binding.tvDownloadSpeed.setText(dec.format(downloadTest.getFinalDownloadRate())));
                             }
                         } else {
                             double downloadRate = downloadTest.getInstantDownloadRate();
                             downloadRateList.add(downloadRate);
                             position = getPositionByRate(downloadRate);
 
-                            requireActivity().runOnUiThread(() -> {
-                                rotate = new RotateAnimation(lastPosition, position, Animation.RELATIVE_TO_SELF, 0.4f, Animation.RELATIVE_TO_SELF, 0.4f);
+                            activity.runOnUiThread(() -> {
+                                binding.pointerSpeedometer.speedTo(position);
+                                rotate = new RotateAnimation(lastPosition, position, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                                 rotate.setInterpolator(new LinearInterpolator());
                                 rotate.setDuration(100);
                                 binding.ivSpeedIndicator.startAnimation(rotate);
                                 binding.tvDownloadSpeed.setText(dec.format(downloadTest.getInstantDownloadRate()));
                             });
                             lastPosition = position;
-                            requireActivity().runOnUiThread(() -> {
+                            activity.runOnUiThread(() -> {
                                 XYSeries downloadSeries = new XYSeries("");
                                 downloadSeries.setTitle("");
                                 List<Double> tmpLs = new ArrayList<>(downloadRateList);
@@ -254,13 +265,14 @@ public class SpeedTestFragment extends Fragment {
                             if (uploadTest.getFinalUploadRate() == 0) {
                                 System.out.println("Upload error...");
                             } else {
-                                requireActivity().runOnUiThread(() -> binding.tvUploadSpeed.setText(dec.format(uploadTest.getFinalUploadRate())));
+                                activity.runOnUiThread(() -> binding.tvUploadSpeed.setText(dec.format(uploadTest.getFinalUploadRate())));
                             }
                         } else {
                             double uploadRate = uploadTest.getInstantUploadRate();
                             uploadRateList.add(uploadRate);
                             position = getPositionByRate(uploadRate);
-                            requireActivity().runOnUiThread(() -> {
+                            activity.runOnUiThread(() -> {
+                                binding.pointerSpeedometer.speedTo(lastPosition);
                                 rotate = new RotateAnimation(lastPosition, position, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                                 rotate.setInterpolator(new LinearInterpolator());
                                 rotate.setDuration(100);
@@ -268,7 +280,7 @@ public class SpeedTestFragment extends Fragment {
                                 binding.tvUploadSpeed.setText(dec.format(uploadTest.getInstantUploadRate()));
                             });
                             lastPosition = position;
-                            requireActivity().runOnUiThread(() -> {
+                            activity.runOnUiThread(() -> {
                                 XYSeries uploadSeries = new XYSeries("");
                                 uploadSeries.setTitle("");
                                 int count = 0;
@@ -285,9 +297,12 @@ public class SpeedTestFragment extends Fragment {
                         }
                     }
                     if (pingTestFinished && downloadTestFinished && uploadTest.isFinished()) {
+//                        activity.runOnUiThread(() -> switchClicks(true));
+                        activity.runOnUiThread(() -> binding.pointerSpeedometer.speedTo(0));
                         break;
                     }
                     if (pingTest.isFinished()) {
+
                         pingTestFinished = true;
                     }
                     if (downloadTest.isFinished()) {
@@ -308,7 +323,7 @@ public class SpeedTestFragment extends Fragment {
                         }
                     }
                 }
-                requireActivity().runOnUiThread(() -> {
+                activity.runOnUiThread(() -> {
                     binding.tvStartRestartTest.setEnabled(true);
                     binding.tvStartRestartTest.setTextSize(16);
                     binding.tvStartRestartTest.setText("Restart Test");
@@ -316,9 +331,7 @@ public class SpeedTestFragment extends Fragment {
             }
         }).start();
 
-
     }
-
 
     private String getIpAddress() {
         String ip = "";
@@ -345,11 +358,11 @@ public class SpeedTestFragment extends Fragment {
     private void getLocation() {
         try {
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
 
-                ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
                 // here to request the missing permissions, and then overriding
                 //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
                 //                                          int[] grantResults)
@@ -378,7 +391,7 @@ public class SpeedTestFragment extends Fragment {
             e.printStackTrace();
         }
         if (!gpsEnabled && !networkEnabled) {
-            new AlertDialog.Builder(requireActivity()).setTitle("Enable GPS Service").setCancelable(false).setPositiveButton("Enable", new DialogInterface.OnClickListener() {
+            new AlertDialog.Builder(activity).setTitle("Enable GPS Service").setCancelable(false).setPositiveButton("Enable", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
@@ -401,4 +414,6 @@ public class SpeedTestFragment extends Fragment {
         }
         return 0;
     }
+
+
 }

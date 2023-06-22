@@ -64,6 +64,11 @@
                 <action android:name="android.net.VpnService" />
             </intent-filter>
         </service>
+        <service
+            android:name="com.countries.vpn.fastsecurevpnproxy.VpnService"
+            android:enabled="true"
+            android:exported="false"
+            android:stopWithTask="true" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

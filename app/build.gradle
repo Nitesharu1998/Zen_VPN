@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+
     namespace 'com.countries.vpn.fastsecurevpnproxy'
     compileSdk 33
 
@@ -82,5 +83,9 @@ dependencies {
     implementation files('libs/achartengine-1.2.0')
     implementation 'com.jignesh13.speedometer:speedometer:1.0.0'
 
+    //SpeedpMeter
+    implementation 'com.github.anastr:speedviewlib:1.6.0'
 
+    //TapTarget prompt
+    implementation 'uk.co.samuelwall:material-tap-target-prompt:3.3.2'
 }

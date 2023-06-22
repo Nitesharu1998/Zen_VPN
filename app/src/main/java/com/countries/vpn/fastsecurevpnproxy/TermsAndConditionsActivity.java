@@ -16,7 +16,7 @@ public class TermsAndConditionsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_terms_and_conditions);
 
-        binding.wvTerms.loadUrl("");
+        binding.wvTerms.loadUrl("https://innovaticads.blogspot.com/p/privacy-policy.html");
         binding.wvTerms.setWebViewClient(new WebViewClient());
         binding.wvTerms.getSettings().setJavaScriptEnabled(true);
         binding.wvTerms.setWebViewClient(new WebViewClient());

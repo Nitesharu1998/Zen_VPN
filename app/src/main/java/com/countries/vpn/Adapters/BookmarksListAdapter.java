@@ -30,7 +30,7 @@ public class BookmarksListAdapter extends RecyclerView.Adapter<BookmarksListAdap
     @NonNull
     @Override
     public BookmarksListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        BookmarksItemBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.layout_bookmarks, parent, false);
+        BookmarksItemBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.bookmarks_item, parent, false);
         return new ViewHolder(binding);
     }
 

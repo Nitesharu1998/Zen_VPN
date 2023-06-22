@@ -1,5 +1,6 @@
 package com.countries.vpn.Fragment;
 
+import static com.countries.vpn.AdsUtils.FirebaseADHandlers.MyApplication.getPreferences;
 import static com.countries.vpn.AdsUtils.Utils.Constants.backend;
 
 import android.app.Activity;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -54,11 +56,11 @@ public class HomeFragment extends Fragment {
     boolean isChecked = false;
 
 
+
     ActivityResultLauncher<Intent> openDialog = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
             if (result.getResultCode() == Activity.RESULT_OK) {
-                // Here, no request code
                 new Handler().post(() -> binding.imgPower.performClick());
             } else {
                 Intent intentPrepare = GoBackend.VpnService.prepare(requireActivity());
@@ -72,7 +74,9 @@ public class HomeFragment extends Fragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
         viewModel = new ViewModelProvider(this).get(DataViewModel.class);
         mainActivity = (MainActivity) requireActivity();
+        AdUtils.showNativeAd(requireActivity(), binding.nativeAds, false);
         toggle = new ActionBarDrawerToggle(requireActivity(), binding.drawer, R.string.opendrawer, R.string.closedrawer);
+        binding.imgPower.setClickable(false);
         binding.drawer.addDrawerListener(toggle);
         //startPromotionSwitch();
         toggle.syncState();
@@ -81,7 +85,8 @@ public class HomeFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private void startPromotionSwitch() {
+
+   /* private void startPromotionSwitch() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -97,7 +102,7 @@ public class HomeFragment extends Fragment {
 
             }
         }, 2000);
-    }
+    }*/
 
     private void setUpVPN() {
         try {
@@ -113,6 +118,14 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        binding.ivSubscription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.drawer.close();
+                Toast.makeText(mainActivity, "This feature will be available soon....", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         binding.ivClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,7 +196,6 @@ public class HomeFragment extends Fragment {
         });
 
         binding.imgPower.setOnClickListener(view -> {
-
             if (!Constants.isConnected) {
                 binding.tvConnect.setText("Connecting...");
                 Intent intentPrepare = GoBackend.VpnService.prepare(requireActivity());
@@ -194,17 +206,29 @@ public class HomeFragment extends Fragment {
                         @Override
                         public void isConnected(boolean state, String ipAddress) {
                             if (state) {
+                                if (getPreferences().isFirstRun()) {
+                                    MainActivity.showTapPrompt();
+                                }
                                 binding.llIpLayout.setVisibility(View.VISIBLE);
                                 binding.rbAutoSelect.setVisibility(View.GONE);
                                 binding.tvIpaddress.setText(ipAddress);
                                 binding.tvConnect.setText("Connected");
                                 binding.motionLayout.transitionToEnd();
-                                Constants.isConnected = true;
+                                binding.layout.setBackgroundResource(R.color.transperant);
+                                getPreferences().setFirstRun(false);
+
+
                             } else {
                                 binding.tvConnect.setText("Reconnecting...");
                                 binding.motionLayout.transitionToStart();
                                 new Handler().post(() -> binding.imgPower.performClick());
+                                binding.layout.setBackgroundResource(R.color.appbg);
+                               /* new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
 
+                                    }
+                                }, 1000);*/
                             }
                         }
 
@@ -212,11 +236,12 @@ public class HomeFragment extends Fragment {
                 }
             } else {
                 binding.tvConnect.setText("Disconnected");
-                Constants.isConnected = false;
                 VPNInitiatorHandler.disconnectVPN();
                 binding.motionLayout.transitionToStart();
                 binding.llIpLayout.setVisibility(View.GONE);
                 binding.rbAutoSelect.setVisibility(View.VISIBLE);
+                binding.layout.setBackgroundResource(R.color.appbg);
+                Constants.isConnected = false;
             }
 
 
@@ -235,27 +260,43 @@ public class HomeFragment extends Fragment {
             public void onChanged(List<CountryWiseVPNModels> countryWiseVPNModels) {
                 if (countryWiseVPNModels.size() > 0) {
                     Constants.countryWiseVpnList = countryWiseVPNModels;
+                    binding.imgPower.setClickable(true);
                 }
             }
         });
-        if (Constants.randomTunnelModel.getCountry() == null && !Constants.isConnected) {
+        if (Constants.randomTunnelModel.getCountry() == null) {
             viewModel.getRandomTunnelModel().observe(this, new Observer<TunnelModel>() {
                 @Override
                 public void onChanged(TunnelModel model) {
                     if (model != null) {
+                        binding.imgPower.setClickable(true);
                         Constants.randomTunnelModel = model;
                         binding.tvCountryName.setText(Constants.randomTunnelModel.getCountry());
                         Glide.with(requireActivity()).load(Global.getFlagOfCountry(Constants.randomTunnelModel.getCountry())).into(binding.imgVpnFlag);
+                        binding.tvConnect.setText("Disconnected");
+                        binding.motionLayout.transitionToStart();
+                        binding.layout.setBackgroundResource(R.color.appbg);
+                        onResume();
                     }
                 }
             });
-        } else {
+        } else if (Constants.isConnected) {
+            binding.llIpLayout.setVisibility(View.VISIBLE);
+            binding.rbAutoSelect.setVisibility(View.GONE);
+            binding.tvIpaddress.setText(Constants.IPAddress);
+            binding.tvConnect.setText("Connected");
             binding.tvCountryName.setText(Constants.randomTunnelModel.getCountry());
             Glide.with(requireActivity()).load(Global.getFlagOfCountry(Constants.randomTunnelModel.getCountry())).into(binding.imgVpnFlag);
             binding.motionLayout.transitionToEnd();
-            binding.tvConnect.setText("Connected");
+            binding.layout.setBackgroundResource(R.color.transperant);
+        } else {
+            binding.imgPower.setClickable(true);
+            VPNInitiatorHandler.disconnectVPN();
+            binding.tvCountryName.setText(Constants.randomTunnelModel.getCountry());
+            Glide.with(requireActivity()).load(Global.getFlagOfCountry(Constants.randomTunnelModel.getCountry())).into(binding.imgVpnFlag);
+            binding.motionLayout.transitionToStart();
+            binding.layout.setBackgroundResource(R.color.appbg);
         }
-
 
         binding.cvCardSuggestedServer.setOnClickListener(new View.OnClickListener() {
             @Override

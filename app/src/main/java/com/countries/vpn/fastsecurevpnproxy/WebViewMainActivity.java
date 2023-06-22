@@ -41,7 +41,6 @@ public class WebViewMainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
     }
 
     @Override
@@ -50,6 +49,7 @@ public class WebViewMainActivity extends AppCompatActivity {
         activity = this;
         binding = DataBindingUtil.setContentView(activity, R.layout.activity_web_view_main);
         initListeners();
+        Global.hideSoftKeyBoard(activity);
         preferences = new AppPreferences(activity);
         normalTabs = preferences.getStoredNormalTabs();
         if (getIntent().hasExtra(Constants.URL_INTENT)) {
@@ -58,7 +58,7 @@ public class WebViewMainActivity extends AppCompatActivity {
             if (!URLUtil.isValidUrl(urlToHit)) {
                 Toast.makeText(activity, "Please Enter Valid URL", Toast.LENGTH_SHORT).show();
             } else
-                Global.loadURLinWebView(binding.wvMain, urlToHit, binding.ivBackPress, binding.ivNextPress, new AppInterfaces.WebViewInterface() {
+                Global.loadURLinWebView(binding.tvProgress,binding.wvMain, urlToHit, binding.ivBackPress, binding.ivNextPress, new AppInterfaces.WebViewInterface() {
                     @Override
                     public void getClickedURL(String URL) {
                         if (Constants.isPrivateTab) {
@@ -90,6 +90,8 @@ public class WebViewMainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!isSwitchTabActive) {
+                    binding.ivShowBookmarks.setBackgroundResource(R.drawable.tab_transparent);
+                    binding.ivSwitchTabs.setBackgroundResource(R.drawable.tab_bg);
                     isSwitchTabActive = true;
                     showBookMarkUI(2);
                     setTabs();
@@ -149,10 +151,11 @@ public class WebViewMainActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if (i == EditorInfo.IME_ACTION_SEND) {
+                    Global.hideSoftKeyBoard(activity);
                     if (!URLUtil.isValidUrl(binding.edtWebsite.getText().toString())) {
                         Toast.makeText(activity, "Please Enter Valid URL", Toast.LENGTH_SHORT).show();
                     } else
-                        Global.loadURLinWebView(binding.wvMain, binding.edtWebsite.getText().toString(), binding.ivBackPress, binding.ivNextPress, new AppInterfaces.WebViewInterface() {
+                        Global.loadURLinWebView(binding.tvProgress, binding.wvMain, binding.edtWebsite.getText().toString(), binding.ivBackPress, binding.ivNextPress, new AppInterfaces.WebViewInterface() {
                             @Override
                             public void getClickedURL(String URL) {
                                 normalTabs.add(URL);
@@ -176,6 +179,9 @@ public class WebViewMainActivity extends AppCompatActivity {
         binding.ivShowBookmarks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                isSwitchTabActive = false;
+                binding.ivShowBookmarks.setBackgroundResource(R.drawable.tab_bg);
+                binding.ivSwitchTabs.setBackgroundResource(R.drawable.tab_transparent);
                 showBookMarkUI(0);
                 setUpList();
             }
@@ -201,6 +207,7 @@ public class WebViewMainActivity extends AppCompatActivity {
             WebTabsAdapter adapter = new WebTabsAdapter(Constants.privateLinksArray, activity, new AppInterfaces.TabAdapterInterface() {
                 @Override
                 public void removeTab(int Position) {
+
                     Constants.privateLinksArray.remove(Position);
                     setPrivateTabList(Constants.privateLinksArray);
                 }
@@ -209,9 +216,10 @@ public class WebViewMainActivity extends AppCompatActivity {
                 public void hitLink(int Position) {
                     isSwitchTabActive = false;
                     showBookMarkUI(1);
-                    Global.loadURLinWebView(binding.wvMain, normalTabs.get(Position), binding.ivBackPress, binding.ivNextPress, new AppInterfaces.WebViewInterface() {
+                    Global.loadURLinWebView(binding.tvProgress, binding.wvMain, normalTabs.get(Position), binding.ivBackPress, binding.ivNextPress, new AppInterfaces.WebViewInterface() {
                         @Override
                         public void getClickedURL(String URL) {
+                            binding.ivSwitchTabs.setBackgroundResource(R.drawable.tab_transparent);
                             binding.edtWebsite.getText().clear();
                             binding.edtWebsite.setText(URL.trim());
                         }
@@ -242,6 +250,7 @@ public class WebViewMainActivity extends AppCompatActivity {
         WebTabsAdapter adapter = new WebTabsAdapter(normalTabs, activity, new AppInterfaces.TabAdapterInterface() {
             @Override
             public void removeTab(int position) {
+                binding.ivSwitchTabs.setBackgroundResource(R.drawable.tab_transparent);
                 normalTabs.remove(position);
                 preferences.setStoredNormalTabs(normalTabs);
                 setNormalTabsList(normalTabs);
@@ -249,9 +258,10 @@ public class WebViewMainActivity extends AppCompatActivity {
 
             @Override
             public void hitLink(int position) {
+                binding.ivSwitchTabs.setBackgroundResource(R.drawable.tab_transparent);
                 isSwitchTabActive = false;
                 showBookMarkUI(1);
-                Global.loadURLinWebView(binding.wvMain, normalTabs.get(position), binding.ivBackPress, binding.ivNextPress, new AppInterfaces.WebViewInterface() {
+                Global.loadURLinWebView(binding.tvProgress, binding.wvMain, normalTabs.get(position), binding.ivBackPress, binding.ivNextPress, new AppInterfaces.WebViewInterface() {
                     @Override
                     public void getClickedURL(String URL) {
                         binding.edtWebsite.getText().clear();
@@ -279,7 +289,6 @@ public class WebViewMainActivity extends AppCompatActivity {
         binding.tabSelector.addTab(binding.tabSelector.newTab().setText("Private")/*.setIcon(R.drawable.ic_private_tab)*/);
     }
 
-
     private void setUpList() {
         ArrayList<WebLinksDataModel> models = Global.getWebLinkDataModel(activity);
         if (!models.isEmpty()) {
@@ -289,9 +298,10 @@ public class WebViewMainActivity extends AppCompatActivity {
             BookmarksAdapter adapter = new BookmarksAdapter(activity, models, new AppInterfaces.AdapterClick() {
                 @Override
                 public void clickedPosition(int position) {
+                    binding.ivShowBookmarks.setBackgroundResource(R.drawable.tab_transparent);
                     showBookMarkUI(1);
                     binding.edtWebsite.setText(models.get(position).getURL());
-                    Global.loadURLinWebView(binding.wvMain, models.get(position).getURL(), binding.ivBackPress, binding.ivNextPress, new AppInterfaces.WebViewInterface() {
+                    Global.loadURLinWebView(binding.tvProgress, binding.wvMain, models.get(position).getURL(), binding.ivBackPress, binding.ivNextPress, new AppInterfaces.WebViewInterface() {
                         @Override
                         public void getClickedURL(String URL) {
                             binding.edtWebsite.getText().clear();

@@ -50,8 +50,20 @@ public class AppPreferences {
         return getString(Constants.ADSJSON, "");
     }
 
-    public boolean getIsFirstRun() {
+    public boolean isConnected() {
+        return getBoolean("isConnected", false);
+    }
+
+    public void setConnected(boolean isConnected) {
+        putBoolean("isConnected", isConnected);
+    }
+
+    public boolean isFirstRun() {
         return getBoolean(Constants.IS_FIRST_RUN, true);
+    }
+
+    public void setFirstRun(boolean isFirstRun) {
+        putBoolean(Constants.IS_FIRST_RUN, isFirstRun);
     }
 
 
@@ -65,10 +77,6 @@ public class AppPreferences {
 
     public void setFlagsModel(String model) {
         putString(Constants.FlagsModel, model);
-    }
-
-    public void setIsFirstRun(boolean isFirstRun) {
-        putBoolean(Constants.IS_FIRST_RUN, isFirstRun);
     }
 
     public void putString(String key, String value) {

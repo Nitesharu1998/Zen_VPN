@@ -48,6 +48,7 @@ import com.google.gson.Gson;
 public class AdUtils {
 
     private static ConnectionDetector cd;
+    protected String test="test";
 
     public static void loadInitialNativeList(Activity activity) {
         int i = 0;
@@ -184,6 +185,7 @@ public class AdUtils {
         AppPreferences appPreferencesManger = new AppPreferences(activity);
         Constants.adsJsonPOJO = new Gson().fromJson(appPreferencesManger.getAdsModel(), AdsJsonPOJO.class);
         cd = new ConnectionDetector(activity);
+
         if (cd.isConnectingToInternet() && Constants.adsJsonPOJO.getParameters().getShowAd().getDefaultValue().getValue().equals("true")) {
             if (Constants.hitCounter == Integer.parseInt(Constants.adsJsonPOJO.getParameters().getApp_open_ad().getDefaultValue().getHits())) {
                 loadInterstitialAd(activity, interstitialADInterface);
@@ -211,7 +213,7 @@ public class AdUtils {
                     unifiedNativeAdView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.small_native_ad, null);
                 }
                 unifiedNativeAdView.isHardwareAccelerated();
-                populateUnifiedNativeAdView(nativeAd, unifiedNativeAdView, isFullScreenAd);
+                populateUnifiedNativeAdView(activity,nativeAd, unifiedNativeAdView, isFullScreenAd);
                 Global.sout("ADs status", "native success");
                 adContainer.removeAllViews();
                 adContainer.addView(unifiedNativeAdView);
@@ -277,7 +279,7 @@ public class AdUtils {
         }
     }
 
-    private static void populateUnifiedNativeAdView(NativeAd unifiedNativeAd, NativeAdView unifiedNativeAdView, boolean flag) {
+    private static void populateUnifiedNativeAdView(Activity activity, NativeAd unifiedNativeAd, NativeAdView unifiedNativeAdView, boolean flag) {
         if (flag) {
             unifiedNativeAdView.setMediaView((MediaView) unifiedNativeAdView.findViewById(R.id.ad_media));
         }
@@ -334,6 +336,7 @@ public class AdUtils {
         }
         unifiedNativeAdView.setNativeAd(unifiedNativeAd);
         Constants.NativeAdsList.remove(0);
+        loadInitialNativeList(activity);
     }
 
     public static void showRewardAd(Activity activity) {

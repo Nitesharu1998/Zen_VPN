@@ -1,5 +1,8 @@
 package com.countries.vpn.AdsUtils.FirebaseADHandlers;
 
+import static com.countries.vpn.AdsUtils.FirebaseADHandlers.MyApplication.getPreferences;
+import static java.util.Objects.isNull;
+
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
@@ -9,6 +12,7 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import com.countries.vpn.AdsUtils.PreferencesManager.AppPreferences;
 import com.countries.vpn.AdsUtils.Utils.Constants;
 import com.countries.vpn.Vpn.VPNInitiatorHandler;
 import com.countries.vpn.Vpn.VpnInterfaces;
@@ -19,6 +23,7 @@ public class AppOpenAds implements LifecycleObserver, Application.ActivityLifecy
     private Activity currentActivity;
     MyApplication application;
     boolean isAdShowing;
+
 
     public AppOpenAds(MyApplication application) {
         this.application = application;
@@ -59,11 +64,11 @@ public class AppOpenAds implements LifecycleObserver, Application.ActivityLifecy
         AdUtils.loadInitialInterstitialAds(activity);
         AdUtils.loadAppOpenAds(activity);
         AdUtils.loadInitialNativeList(activity);
-        if (Constants.randomTunnelModel.getCountry() != null && !Constants.isConnected) {
+        if (!isNull(Constants.randomTunnelModel.getCountry()) && Constants.isConnected) {
             VPNInitiatorHandler.connectVPN(activity, Constants.randomTunnelModel, new VpnInterfaces.vpnConnectionInterface() {
                 @Override
                 public void isConnected(boolean state, String ipAddress) {
-                    Constants.isConnected = true;
+                    Constants.isConnected = state;
                 }
             });
         }
@@ -76,7 +81,6 @@ public class AppOpenAds implements LifecycleObserver, Application.ActivityLifecy
 
     @Override
     public void onActivityPaused(Activity activity) {
-        Constants.isConnected = false;
         VPNInitiatorHandler.disconnectVPN();
     }
 

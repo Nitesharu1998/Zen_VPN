@@ -1,5 +1,6 @@
 package com.countries.vpn.AdsUtils.Utils;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
 import static android.os.Build.VERSION.SDK_INT;
 
 import android.app.Activity;
@@ -18,10 +19,13 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.URLUtil;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
@@ -210,20 +214,37 @@ public class Global {
         }
     }
 
-    public static void loadURLinWebView(WebView wvMain, String urlToHit, ImageView ivBackPress, ImageView ivNextPress, AppInterfaces.WebViewInterface webViewInterface) {
+    public static void loadURLinWebView(LinearLayout tvProgress, WebView wvMain, String urlToHit, ImageView ivBackPress, ImageView ivNextPress, AppInterfaces.WebViewInterface webViewInterface) {
+        if (tvProgress.getVisibility() == View.GONE) {
+            tvProgress.setVisibility(View.VISIBLE);
+        }
         wvMain.loadUrl(urlToHit);
         wvMain.setWebViewClient(new WebViewClient());
         wvMain.getSettings().setJavaScriptEnabled(true);
         wvMain.getSettings().setUseWideViewPort(true);
         wvMain.setWebViewClient(new WebViewClient() {
+                                    @Override
+                                    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                                        super.onPageStarted(view, url, favicon);
+                                        webViewInterface.getClickedURL(url);
+                                        webViewInterface.getBitmap(favicon);
+                                    }
+
+                                }
+
+        );
+
+        wvMain.setWebChromeClient(new WebChromeClient() {
 
             @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-                webViewInterface.getClickedURL(url);
-                webViewInterface.getBitmap(favicon);
+            public void onProgressChanged(WebView view, int newProgress) {
+                super.onProgressChanged(view, newProgress);
+                Log.e("onProgressChanged: ", "" + newProgress / 10);
+                tvProgress.setGravity(newProgress);
+                if (newProgress == 100) {
+                    tvProgress.setVisibility(View.GONE);
+                }
             }
-
         });
 
         ivBackPress.setOnClickListener(new View.OnClickListener() {
@@ -288,6 +309,14 @@ public class Global {
                 }
             }
         });
+    }
+
+    public static void hideSoftKeyBoard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
+
+        if (imm.isAcceptingText()) { // verify if the soft keyboard is open
+            imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        }
     }
 
 }

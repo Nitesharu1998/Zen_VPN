@@ -145,15 +145,32 @@
 
 
         <!--appbar-->
+        <LinearLayout
+            android:id="@+id/ll_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ll_appbar"
+            android:weightSum="100"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/tv_progress"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="0"
+                android:background="#e1eb34"
+                android:orientation="horizontal" />
+        </LinearLayout>
 
         <WebView
             android:id="@+id/wv_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/ll_bottomControls"
-            android:layout_below="@+id/ll_appbar"
+            android:layout_below="@id/ll_progress"
             android:backgroundTint="@color/appbg"
             android:padding="@dimen/_4sdp" />
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rcl_listBookmarks"

@@ -12,7 +12,16 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MyApplication extends Application {
+
     private static MyApplication app;
+    static AppPreferences preferences;
+
+    public static AppPreferences getPreferences(){
+        if (preferences == null)
+            preferences = new AppPreferences(app);
+        return preferences;
+    }
+
     public static MyApplication getInstance() {
         return app;
     }

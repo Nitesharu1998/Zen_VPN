@@ -18,6 +18,7 @@ public class Constants {
     public static final String WEBLINKMODEL = "WEBLINKMODEL";
     public static final String NORMAL_TABS = "NORMAL_TABS";
     public static final String PRIVATE_TABS = "PRIVATE_TABS";
+    public static final String IS_FIRST_RUN = "IS_FIRST_RUN";
     public static String CURRENCY = "CURRENCY";
     public static String CURRENCY_STORED = "";
     public static boolean LIGHT_THEME = true;
@@ -28,8 +29,8 @@ public class Constants {
     public static ArrayList<AppOpenAd> AppOpenAdsList = new ArrayList<>();
     public static ArrayList<NativeAd> NativeAdsList = new ArrayList<>();
     public static ArrayList<AdView> CollapsibleAdsList = new ArrayList<>();
-    public static final String IS_FIRST_RUN = "isFirstRun";
     public static boolean isConnected = false;
+    public static String IPAddress = null;
     public static String FlagsModel = "FlagsModel";
     public static CricketFlagsResponseModel cricketFlagsModel = new CricketFlagsResponseModel();
     public static ArrayList<TunnelModel> tunnelModelList = new ArrayList<>();

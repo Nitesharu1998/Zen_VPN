@@ -17,7 +17,6 @@
             android:id="@+id/btn_power"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_marginStart="8dp"
             motion:layout_constraintBottom_toBottomOf="@+id/spiral_bg"
             motion:layout_constraintEnd_toEndOf="@+id/spiral_bg"
             motion:layout_constraintHorizontal_bias="0.5"
@@ -38,6 +37,10 @@
             android:id="@+id/img_top"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_180sdp"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintHorizontal_bias="0.5"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"/>
     </ConstraintSet>
 </MotionScene>

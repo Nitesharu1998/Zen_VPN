@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -14,15 +14,16 @@
             android:name="com.countries.vpn.Fragment.HomeFragment"
             tools:layout="@layout/fragment_home"
             android:id="@+id/frm_container"
+            android:layout_above="@+id/cv_custombottom"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_height="match_parent" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_custombottom"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             app:cardCornerRadius="@dimen/_10sdp"
+            android:layout_alignParentBottom="true"
             android:elevation="@dimen/_12sdp"
             android:backgroundTint="@color/bottom_nav_bg"
             android:layout_marginHorizontal="@dimen/_8sdp"
@@ -53,9 +54,9 @@
                 <ImageView
                     android:id="@+id/iv_browser"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_bottom_browser"/>
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_bottom_browser" />
 
                 <ImageView
                     android:id="@+id/iv_speedtest"
@@ -69,5 +70,5 @@
         </androidx.cardview.widget.CardView>
 
 
-    </LinearLayout>
+    </RelativeLayout>
 </layout>

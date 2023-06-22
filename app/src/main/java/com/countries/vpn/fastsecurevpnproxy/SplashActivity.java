@@ -19,12 +19,7 @@ import com.countries.vpn.AdsUtils.PreferencesManager.AppPreferences;
 import com.countries.vpn.AdsUtils.Utils.AppAsyncTasks;
 import com.countries.vpn.AdsUtils.Utils.Constants;
 import com.countries.vpn.AdsUtils.Utils.Global;
-import com.countries.vpn.Vpn.APIHandler.VPNApiCallHandler;
-import com.countries.vpn.Vpn.TunnelModel;
 import com.countries.vpn.fastsecurevpnproxy.databinding.ActivitySplashBinding;
-import com.wireguard.android.backend.Backend;
-
-import java.util.ArrayList;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
@@ -43,7 +38,6 @@ public class SplashActivity extends AppCompatActivity {
         getFlags.execute();
         if (Constants.adsJsonPOJO != null && !isNull(Constants.adsJsonPOJO.getParameters().getApp_open_ad().getDefaultValue().getValue())) {
             Constants.adsJsonPOJO = Global.getAdsData(appPreferencesManger.getAdsModel());
-            Constants.adsJsonPOJO.getParameters().getShowAd().getDefaultValue().setValue("false");
             Constants.hitCounter = Integer.parseInt(Constants.adsJsonPOJO.getParameters().getApp_open_ad().getDefaultValue().getHits());
             proceed();
         } else {
@@ -54,7 +48,6 @@ public class SplashActivity extends AppCompatActivity {
                     appPreferencesManger.setAdsModel(adsJsonPOJO);
                     Constants.adsJsonPOJO = adsJsonPOJO;
                     Constants.hitCounter = Integer.parseInt(Constants.adsJsonPOJO.getParameters().getApp_open_ad().getDefaultValue().getHits());
-                    Constants.adsJsonPOJO.getParameters().getShowAd().getDefaultValue().setValue("false");
                     proceed();
                 }
             });
@@ -69,13 +62,10 @@ public class SplashActivity extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        if (appPreferencesManger.getIsFirstRun()) {
-                            startActivity(new Intent(SplashActivity.this, IntroActivity.class));
+
+                        startActivity(new Intent(SplashActivity.this, IntroActivity.class));
                             finish();
-                        } else {
-                            startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                            finish();
-                        }
+
                     }
                 }, 1000);
             }
